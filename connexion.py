@@ -140,7 +140,7 @@ class ConnexionSync(Connexion):
     def receive_check_error(self, cmd_args):
         while True:
             try:
-                response = self.receive_check_error(cmd_args)
+                response = super().receive_check_error(cmd_args)
                 break
             except CollectingData:
                 pass
