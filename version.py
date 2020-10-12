@@ -1,1 +1,7 @@
-VERSION = '1.0.0'
+NAME = "hwcom"
+VERSION = "1.0.0"
+GIT_COMMIT = ""
+GIT_REMOTE = ""
+GIT_BRANCH = ""
+GIT_MODIFIED = False
+GIT_AHEAD = False
