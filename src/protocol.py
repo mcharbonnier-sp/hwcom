@@ -5,7 +5,10 @@ from saveable import Saveable
 class CollectingData(Exception):
     """ Exception raised if the connection is waiting for data.
     """
-    pass
+
+    def __init__(self, msg, cmd_args, *args: object) -> None:
+        super().__init__(msg, *args)
+        self.command_args = cmd_args
 
 
 class ErrorResponse(Exception):

@@ -1,6 +1,6 @@
 from collections import deque
 
-from protocol import Protocol, CollectingData
+from ..protocol import Protocol, CollectingData
 
 
 class TextProtocol(Protocol):
@@ -33,4 +33,4 @@ class TextProtocol(Protocol):
         if self.read_buffer:
             return self.read_buffer.popleft().decode(self.encoding).strip()
         else:
-            raise CollectingData('No or incomplete answer, Collecting data...')
+            raise CollectingData('No or incomplete answer, Collecting data...', cmd_args)

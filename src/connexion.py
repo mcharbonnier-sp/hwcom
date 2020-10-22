@@ -69,7 +69,7 @@ class Connexion(Saveable):
         """
         command = self.protocol.make_set_command(command_params)
         self._send(command, CommandType.COMMAND)
-        self.receive_check_error(command_params)
+        raise CollectingData('Command sent', command_params)
 
     def poll_set_finished(self, command_params):
         """ Raises CollectingData until a response to the set() command is obtained.
@@ -103,25 +103,15 @@ class Connexion(Saveable):
     def set_sync(self, cmd_args):
         self.set(cmd_args)
 
-    def raw_query(self, cmd_args):
+    def query(self, cmd_args):
         """
-        :param list[str] cmd_args: Query elements
+        :param cmd_args: Query elements
         :raises CollectingData
         :return: query result
         """
         command = self.protocol.make_query(cmd_args)
         self._send(command, CommandType.QUERY)
-        ans = self.receive_check_error(cmd_args)
-        return ans
-
-    def query(self, query_args):
-        """ Unlike Commands, queries expect a result to be passed to the main program.
-        :param query_args: Query elements
-        :raises CollectingData
-        :return: query result
-        """
-        response = self.raw_query(query_args)
-        return self.protocol.clean_answer(response, query_args)
+        raise CollectingData('Query sent', cmd_args)
 
     def poll_query_response(self, query_args):
         """ Raises Collecting data until the response is obtained.
@@ -137,6 +127,20 @@ class ConnexionSync(Connexion):
     """ Synchronous connection, set and query will block until the response is received.
         Consequently, CollectingData is never raised.
     """
+    def set(self, command_params):
+        try:
+            super().set(command_params)
+        except CollectingData:
+            pass
+        self.receive_check_error(command_params)
+
+    def query(self, cmd_args):
+        try:
+            super().query(cmd_args)
+        except CollectingData:
+            pass
+        return self.protocol.clean_answer(self.receive_check_error(cmd_args), cmd_args)
+
     def receive_check_error(self, cmd_args):
         while True:
             try:

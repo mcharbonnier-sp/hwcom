@@ -4,8 +4,8 @@ import shutil
 import subprocess as sp
 from typing import List
 
-from version import VERSION as version
-from version import NAME as name
+from src.version import VERSION as version
+from src.version import NAME as name
 
 build_path = os.path.join('.', 'build')
 software = f'{name}_{version}'
@@ -121,5 +121,5 @@ except Exception as ec:
     print(ec)
     raise
 
-shutil.copytree('.', output, ignore=is_ignored)
+shutil.copytree('./src', output, ignore=is_ignored)
 build_version()

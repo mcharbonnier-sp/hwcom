@@ -1,6 +1,6 @@
 import serial
 
-from transportlayer import TransportLayer
+from ..transportlayer import TransportLayer
 
 
 class SerialTL(TransportLayer):
