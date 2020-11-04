@@ -13,7 +13,7 @@ class IpTransportLayer(TransportLayer):
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.level = logging.ERROR
         if address is None:
-            address = ('192.168.0.2', 5025)
+            address = ('192.168.0.2', )
         self.address = address
         self.socket = None
         self.read_buffer = deque()

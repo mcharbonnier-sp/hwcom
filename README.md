@@ -1,4 +1,4 @@
 # HardWare Communication
 
-This library provides a simple to communicate with hardwares, such as instruments.
+This library provides a simple and unified way to communicate with hardwares, such as instruments.
 
