@@ -1,6 +1,8 @@
 import logging
 import time
 from enum import Enum
+from threading import Event
+
 from saveable import Saveable
 
 from .protocol import Protocol, CollectingData
@@ -8,6 +10,10 @@ from .transportlayer import TransportLayer
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
+
+class CommunicationAborted(Exception):
+    pass
 
 
 class CommandType(Enum):
@@ -22,7 +28,7 @@ class Connexion(Saveable):
       * If CollectingData is raised, poll_set_finished and poll_query_response must be called until
         CollectingData is not raised anymore.
     """
-    def __init__(self, transport_layer: TransportLayer, protocol: Protocol, timeout=1):
+    def __init__(self, transport_layer: TransportLayer, protocol: Protocol, timeout=1, stop: Event = None):
         """
         :param TransportLayer transport_layer: Transport layer to use.
         :param Protocol protocol: the protocol used to build queries and manage answers
@@ -32,6 +38,10 @@ class Connexion(Saveable):
         self.logger = logger
         self.timeout = timeout
         self.timeout_start_time = 0
+        if stop is None:
+            self.stop = Event()
+        else:
+            self.stop = stop
 
     def open(self):
         self.transport_layer.open()
@@ -100,8 +110,17 @@ class Connexion(Saveable):
             raise
         return response
 
-    def set_sync(self, cmd_args):
-        self.set(cmd_args)
+    def set_sync(self, cmd_args, poll_delay=0.1):
+        command = self.protocol.make_set_command(cmd_args)
+        self._send(command, CommandType.COMMAND)
+        while True:
+            try:
+                self.poll_set_finished(cmd_args)
+            except CollectingData:
+                if self.stop.wait(poll_delay):
+                    raise CommunicationAborted()
+            else:
+                return
 
     def query(self, cmd_args):
         """
@@ -119,8 +138,17 @@ class Connexion(Saveable):
         """
         return self.protocol.clean_answer(self.receive_check_error(query_args), query_args)
 
-    def query_sync(self, query_args):
-        return self.query(query_args)
+    def query_sync(self, query_args, poll_delay=0.1):
+        command = self.protocol.make_query(query_args)
+        self._send(command, CommandType.QUERY)
+        while True:
+            try:
+                ans = self.poll_query_response(query_args)
+            except CollectingData:
+                if self.stop.wait(poll_delay):
+                    raise CommunicationAborted()
+            else:
+                return ans
 
 
 class ConnexionSync(Connexion):
@@ -140,6 +168,12 @@ class ConnexionSync(Connexion):
         except CollectingData:
             pass
         return self.protocol.clean_answer(self.receive_check_error(cmd_args), cmd_args)
+
+    def set_sync(self, cmd_args, poll_delay=0.1):
+        self.set(cmd_args)
+
+    def query_sync(self, query_args, poll_delay=0.1):
+        return self.query(query_args)
 
     def receive_check_error(self, cmd_args):
         while True:
