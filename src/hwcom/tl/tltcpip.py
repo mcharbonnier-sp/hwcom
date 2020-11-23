@@ -2,7 +2,7 @@ import logging
 from collections import deque
 import socket
 
-from saveable import State
+from potable.saveable import State
 
 from ..transportlayer import TransportLayer
 

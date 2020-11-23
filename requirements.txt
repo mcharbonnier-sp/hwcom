@@ -1,2 +1,2 @@
 pyserial>=3.4
-git+https://gitlab.com/Charbonnier/Saveable#egg=saveable
+git+https://gitlab.com/Charbonnier/Saveable#egg=potable

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from saveable import Saveable
+from potable.saveable import Saveable
 
 
 class TimeOutError(Exception):

@@ -3,7 +3,7 @@ import time
 from enum import Enum
 from threading import Event
 
-from saveable import Saveable
+from potable.saveable import Saveable
 
 from .protocol import Protocol, CollectingData
 from .transportlayer import TransportLayer
