@@ -27,7 +27,7 @@ CLASSIFIERS = [
 
 INSTALL_REQUIRES = [
     'pyserial==3.4',
-    'saveable @ git+https://gitlab.com/Charbonnier/Saveable#egg=potable'
+    'potable @ git+https://gitlab.com/Charbonnier/Saveable#egg=potable'
 ]
 
 ###################################################################
