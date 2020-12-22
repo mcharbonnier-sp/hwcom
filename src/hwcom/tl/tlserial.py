@@ -35,3 +35,6 @@ class SerialTL(TransportLayer):
 
     def flush(self):
         self._port.flushInput()
+
+
+SerialTL.register_class()

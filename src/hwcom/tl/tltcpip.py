@@ -64,3 +64,6 @@ class IpTransportLayer(TransportLayer):
 
     def flush(self):
         pass
+
+
+IpTransportLayer.register_class()
