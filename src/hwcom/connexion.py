@@ -50,6 +50,9 @@ class Connexion(Saveable):
     def close(self):
         self.transport_layer.close()
 
+    def is_open(self):
+        return self.transport_layer.is_open()
+
     def _send(self, command: bytes, command_type: CommandType):
         """
         :param bytes command: The command to send

@@ -40,4 +40,7 @@ class TransportLayer(ABC, Saveable):
     def flush(self):
         pass
 
+    @abstractmethod
+    def is_open(self) -> bool:
+        pass
 

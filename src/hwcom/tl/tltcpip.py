@@ -1,6 +1,7 @@
 import logging
 from collections import deque
 import socket
+from typing import Optional
 
 from potable.saveable import State
 
@@ -15,8 +16,15 @@ class IpTransportLayer(TransportLayer):
         if address is None:
             address = ('192.168.0.2', )
         self.address = address
-        self.socket = None
+        self.socket: Optional[socket.socket] = None
         self.read_buffer = deque()
+
+    def is_open(self):
+        return self.socket is not None
+
+    def _check_socket(self):
+        if self.socket is None:
+            raise ConnectionError('Socket is not open')
 
     def get_state(self) -> State:
         state = super().get_state()
@@ -48,21 +56,25 @@ class IpTransportLayer(TransportLayer):
         self.logger.info('Connected')
 
     def close(self):
+        self._check_socket()
         self.socket.close()
         self.socket = None
         self.logger.info('Connection closed.')
 
     def send(self, message):
+        self._check_socket()
         self.logger.info('Sending %s', message)
         self.socket.send(message)
 
     def recv(self):
+        self._check_socket()
         try:
             return self.socket.recv(1024)
         except socket.timeout:
             return b''
 
     def flush(self):
+        self._check_socket()
         pass
 
 
