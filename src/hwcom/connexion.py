@@ -113,14 +113,14 @@ class Connexion(Saveable):
             raise
         return response
 
-    def set_sync(self, cmd_args, poll_delay=0.1):
+    def set_sync(self, cmd_args):
         command = self.protocol.make_set_command(cmd_args)
         self._send(command, CommandType.COMMAND)
         while True:
             try:
                 self.poll_set_finished(cmd_args)
             except CollectingData:
-                if self.stop.wait(poll_delay):
+                if self.stop.is_set():
                     raise CommunicationAborted()
             else:
                 return
@@ -141,14 +141,14 @@ class Connexion(Saveable):
         """
         return self.protocol.clean_answer(self.receive_check_error(query_args), query_args)
 
-    def query_sync(self, query_args, poll_delay=0.1):
+    def query_sync(self, query_args):
         command = self.protocol.make_query(query_args)
         self._send(command, CommandType.QUERY)
         while True:
             try:
                 ans = self.poll_query_response(query_args)
             except CollectingData:
-                if self.stop.wait(poll_delay):
+                if self.stop.is_set():
                     raise CommunicationAborted()
             else:
                 return ans
@@ -172,10 +172,10 @@ class ConnexionSync(Connexion):
             pass
         return self.protocol.clean_answer(self.receive_check_error(cmd_args), cmd_args)
 
-    def set_sync(self, cmd_args, poll_delay=0.1):
+    def set_sync(self, cmd_args):
         self.set(cmd_args)
 
-    def query_sync(self, query_args, poll_delay=0.1):
+    def query_sync(self, query_args):
         return self.query(query_args)
 
     def receive_check_error(self, cmd_args):
