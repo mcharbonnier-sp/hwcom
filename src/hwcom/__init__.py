@@ -1,6 +1,0 @@
-__description__ = 'hardware communication interface'
-__license__ = 'Proprietary'
-__uri__ = ''
-__version__ = '1.0.0'
-__author__ = 'Matthieu Charbonnier'
-__email__ = 'matthieu.charbonnier@aledia.com'
